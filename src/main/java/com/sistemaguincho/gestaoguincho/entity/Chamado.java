@@ -1,5 +1,6 @@
-package com.sistemaguincho.gestao_guincho.entity;
+package com.sistemaguincho.gestaoguincho.entity;
 
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;

@@ -1,4 +1,4 @@
-package com.sistemaguincho.gestao_guincho;
+package com.sistemaguincho.gestaoguincho;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

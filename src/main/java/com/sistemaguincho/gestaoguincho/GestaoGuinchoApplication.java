@@ -1,4 +1,4 @@
-package com.sistemaguincho.gestao_guincho;
+package com.sistemaguincho.gestaoguincho;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
