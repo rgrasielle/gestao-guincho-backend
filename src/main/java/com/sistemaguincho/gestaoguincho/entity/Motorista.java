@@ -1,5 +1,6 @@
 package com.sistemaguincho.gestaoguincho.entity;
 
+import com.sistemaguincho.gestaoguincho.enums.Disponibilidade;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -34,11 +35,5 @@ public class Motorista {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private Disponibilidade disponibilidade;
-
-    public enum Disponibilidade {
-        DISPONIVEL,
-        EM_ATENDIMENTO,
-        INDISPONIVEL
-    }
 
 }
