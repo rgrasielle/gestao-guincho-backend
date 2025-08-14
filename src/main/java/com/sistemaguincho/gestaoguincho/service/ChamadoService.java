@@ -4,11 +4,16 @@ import com.sistemaguincho.gestaoguincho.config.ModelMapperConfig;
 import com.sistemaguincho.gestaoguincho.dto.ChamadoRequestDTO;
 import com.sistemaguincho.gestaoguincho.dto.ChamadoResponseDTO;
 import com.sistemaguincho.gestaoguincho.entity.Chamado;
+import com.sistemaguincho.gestaoguincho.entity.Motorista;
 import com.sistemaguincho.gestaoguincho.repository.ChamadoRepository;
+import com.sistemaguincho.gestaoguincho.repository.MotoristaRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
 
 @Service
@@ -16,7 +21,7 @@ public class ChamadoService {
 
     private final ChamadoRepository chamadoRepository;
     private final MotoristaRepository motoristaRepository;
-    private final ModelMapperConfig modelMapper;
+    private final ModelMapper modelMapper;
 
     public ChamadoService(
             ChamadoRepository chamadoRepository,
@@ -42,8 +47,22 @@ public class ChamadoService {
     }
 
     // Listar chamados (com filtros opcionais)
-    public Page<ChamadoResponseDTO> listarChamados(String status, String placa, String documento, Pageable pageable) {
-        Page<Chamado> chamados = chamadoRepository.buscarPorFiltros(status, placa, documento, pageable);
+    public Page<ChamadoResponseDTO> listarChamados(
+            String sinistro,
+            String placa,
+            String codigo,
+            String status,
+            String tipo,
+            String veiculo,
+            String cliente,
+            String seguradora,
+            LocalDate entrada,
+            LocalDate saida,
+            Pageable pageable
+    ) {
+        Page<Chamado> chamados = chamadoRepository.buscarPorFiltros(
+                sinistro, placa, codigo, status, tipo, veiculo, cliente, seguradora, entrada, saida, pageable
+        );
         return chamados.map(ch -> modelMapper.map(ch, ChamadoResponseDTO.class));
     }
 

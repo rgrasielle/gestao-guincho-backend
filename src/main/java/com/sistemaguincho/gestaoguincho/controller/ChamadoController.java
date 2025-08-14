@@ -14,6 +14,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+
 @RestController
 @RequestMapping("/api/chamados")
 public class ChamadoController {
@@ -31,17 +33,26 @@ public class ChamadoController {
         return ResponseEntity.status(HttpStatus.CREATED).body(criado);
     }
 
-    // Listar chamados (com filtros opcionais e paginação)
+    // Listar chamados com filtros opcionais
     @GetMapping
     public ResponseEntity<Page<ChamadoResponseDTO>> listar(
-            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String sinistro,
             @RequestParam(required = false) String placa,
-            @RequestParam(required = false) String documento,
+            @RequestParam(required = false) String codigo,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String tipo,
+            @RequestParam(required = false) String veiculo,
+            @RequestParam(required = false) String cliente,
+            @RequestParam(required = false) String seguradora,
+            @RequestParam(required = false) LocalDate entrada,
+            @RequestParam(required = false) LocalDate saida,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<ChamadoResponseDTO> chamados = service.listarChamados(status, placa, documento, pageable);
+        Page<ChamadoResponseDTO> chamados = service.listarChamados(
+                sinistro, placa, codigo, status, tipo, veiculo, cliente, seguradora, entrada, saida, pageable
+        );
         return ResponseEntity.ok(chamados);
     }
 
@@ -62,7 +73,7 @@ public class ChamadoController {
         return ResponseEntity.ok(atualizado);
     }
 
-    // Atualizar status do chamado
+    // Atualizar apenas o status
     @PatchMapping("/{id}/status")
     public ResponseEntity<ChamadoResponseDTO> atualizarStatus(
             @PathVariable Long id,
@@ -78,5 +89,4 @@ public class ChamadoController {
         service.deletarChamado(id);
         return ResponseEntity.noContent().build();
     }
-
 }
