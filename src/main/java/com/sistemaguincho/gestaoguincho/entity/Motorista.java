@@ -1,10 +1,7 @@
 package com.sistemaguincho.gestaoguincho.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
 @Table(name = "motorista")
@@ -12,16 +9,36 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Motorista {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String motoristaNome;
-    private String motoristaCpf;
-    private String motoristaCnh;
-    private String motoristaTelefone;
-    private String motoristaEmail;
+    @Column(nullable = false, length = 100)
+    private String nome;
+
+    @Column(nullable = false, unique = true, length = 14)
+    private String cpf;
+
+    @Column(nullable = false, unique = true, length = 20)
+    private String cnh;
+
+    @Column(length = 20)
+    private String telefone;
+
+    @Column(length = 100)
+    private String email;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private Disponibilidade disponibilidade;
+
+    public enum Disponibilidade {
+        DISPONIVEL,
+        EM_ATENDIMENTO,
+        INDISPONIVEL
+    }
 
 }
