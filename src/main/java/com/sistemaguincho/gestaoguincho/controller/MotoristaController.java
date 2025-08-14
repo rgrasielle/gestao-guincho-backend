@@ -2,6 +2,7 @@ package com.sistemaguincho.gestaoguincho.controller;
 
 import com.sistemaguincho.gestaoguincho.dto.MotoristaRequestDTO;
 import com.sistemaguincho.gestaoguincho.dto.MotoristaResponseDTO;
+import com.sistemaguincho.gestaoguincho.enums.Disponibilidade;
 import com.sistemaguincho.gestaoguincho.service.MotoristaService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +34,13 @@ public class MotoristaController {
             @PathVariable Long id,
             @Valid @RequestBody MotoristaRequestDTO dto) {
         return ResponseEntity.ok(service.atualizar(id, dto));
+    }
+
+    @PatchMapping("/{id}/disponibilidade")
+    public MotoristaResponseDTO atualizarDisponibilidade(
+            @PathVariable Long id,
+            @RequestBody Disponibilidade disponibilidade) {
+        return service.atualizarDisponibilidade(id, disponibilidade);
     }
 
     @DeleteMapping("/{id}")

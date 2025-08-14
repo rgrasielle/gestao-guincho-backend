@@ -2,6 +2,7 @@ package com.sistemaguincho.gestaoguincho.controller;
 
 import com.sistemaguincho.gestaoguincho.dto.GuinchoRequestDTO;
 import com.sistemaguincho.gestaoguincho.dto.GuinchoResponseDTO;
+import com.sistemaguincho.gestaoguincho.enums.Disponibilidade;
 import com.sistemaguincho.gestaoguincho.service.GuinchoService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +33,13 @@ public class GuinchoController {
     @PutMapping("/{id}")
     public GuinchoResponseDTO atualizar(@PathVariable Long id, @RequestBody GuinchoRequestDTO dto) {
         return service.atualizar(id, dto);
+    }
+
+    @PatchMapping("/{id}/disponibilidade")
+    public GuinchoResponseDTO atualizarDisponibilidade(
+            @PathVariable Long id,
+            @RequestBody Disponibilidade disponibilidade) {
+        return service.atualizarDisponibilidade(id, disponibilidade);
     }
 
     @DeleteMapping("/{id}")

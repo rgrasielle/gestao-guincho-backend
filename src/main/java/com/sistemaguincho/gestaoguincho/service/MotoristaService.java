@@ -3,6 +3,7 @@ package com.sistemaguincho.gestaoguincho.service;
 import com.sistemaguincho.gestaoguincho.dto.MotoristaRequestDTO;
 import com.sistemaguincho.gestaoguincho.dto.MotoristaResponseDTO;
 import com.sistemaguincho.gestaoguincho.entity.Motorista;
+import com.sistemaguincho.gestaoguincho.enums.Disponibilidade;
 import com.sistemaguincho.gestaoguincho.repository.MotoristaRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.modelmapper.ModelMapper;
@@ -37,6 +38,14 @@ public class MotoristaService {
         Motorista motorista = repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Motorista não encontrado"));
         modelMapper.map(dto, motorista);
+        Motorista atualizado = repository.save(motorista);
+        return modelMapper.map(atualizado, MotoristaResponseDTO.class);
+    }
+
+    public MotoristaResponseDTO atualizarDisponibilidade(Long id, Disponibilidade disponibilidade) {
+        Motorista motorista = repository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Motorista não encontrado"));
+        motorista.setDisponibilidade(disponibilidade);
         Motorista atualizado = repository.save(motorista);
         return modelMapper.map(atualizado, MotoristaResponseDTO.class);
     }

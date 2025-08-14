@@ -3,6 +3,7 @@ package com.sistemaguincho.gestaoguincho.service;
 import com.sistemaguincho.gestaoguincho.dto.GuinchoRequestDTO;
 import com.sistemaguincho.gestaoguincho.dto.GuinchoResponseDTO;
 import com.sistemaguincho.gestaoguincho.entity.Guincho;
+import com.sistemaguincho.gestaoguincho.enums.Disponibilidade;
 import com.sistemaguincho.gestaoguincho.repository.GuinchoRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.modelmapper.ModelMapper;
@@ -38,6 +39,14 @@ public class GuinchoService {
                 .orElseThrow(() -> new EntityNotFoundException("Guincho não encontrado"));
         modelMapper.map(dto, existente);
         return modelMapper.map(repository.save(existente), GuinchoResponseDTO.class);
+    }
+
+    public GuinchoResponseDTO atualizarDisponibilidade(Long id, Disponibilidade disponibilidade) {
+        Guincho guincho = repository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Guincho não encontrado"));
+        guincho.setDisponibilidade(disponibilidade);
+        Guincho atualizado = repository.save(guincho);
+        return modelMapper.map(atualizado, GuinchoResponseDTO.class);
     }
 
     public void deletar(Long id) {
