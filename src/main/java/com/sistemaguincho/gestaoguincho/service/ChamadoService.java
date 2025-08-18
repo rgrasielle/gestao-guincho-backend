@@ -49,21 +49,21 @@ public class ChamadoService {
     public Page<ChamadoResponseDTO> listarChamados(
             String sinistro,
             String placa,
-            String codigo,
+            Long codigo,  // <-- era String, vira Long
             String status,
-            String tipo,
-            String veiculo,
-            String cliente,
+            String tipoServico,
+            String modeloVeiculo,
             String seguradora,
-            LocalDate entrada,
-            LocalDate saida,
+            OffsetDateTime dataAbertura,   // <-- era LocalDate
+            OffsetDateTime dataFechamento, // <-- era LocalDate
             Pageable pageable
     ) {
         Page<Chamado> chamados = chamadoRepository.buscarPorFiltros(
-                sinistro, placa, codigo, status, tipo, veiculo, cliente, seguradora, entrada, saida, pageable
+                sinistro, placa, codigo, status, tipoServico, modeloVeiculo, seguradora, dataAbertura, dataFechamento, pageable
         );
         return chamados.map(ch -> modelMapper.map(ch, ChamadoResponseDTO.class));
     }
+
 
     // Buscar chamado por ID
     public ChamadoResponseDTO buscarPorId(Long id) {

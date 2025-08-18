@@ -9,32 +9,33 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
 
 @Repository
 public interface ChamadoRepository extends JpaRepository<Chamado, Long> {
 
     @Query("SELECT c FROM Chamado c " +
+            "LEFT JOIN c.guincho g " +
+            "LEFT JOIN c.motorista m " +
             "WHERE (:sinistro IS NULL OR c.sinistro LIKE %:sinistro%) " +
-            "AND (:placa IS NULL OR c.veiculoPlaca LIKE %:placa%) " +
-            "AND (:codigo IS NULL OR c.numero LIKE %:codigo%) " +
+            "AND (:placa IS NULL OR g.placa LIKE %:placa%) " +
+            "AND (:codigo IS NULL OR c.id = :codigo) " +
             "AND (:status IS NULL OR c.status = :status) " +
-            "AND (:tipo IS NULL OR c.tipoServico = :tipo) " +
-            "AND (:veiculo IS NULL OR c.veiculoModelo LIKE %:veiculo%) " +
-            "AND (:cliente IS NULL OR c.clienteNome LIKE %:cliente%) " +
+            "AND (:tipoServico IS NULL OR c.tipoServico = :tipoServico) " +
+            "AND (:modeloVeiculo IS NULL OR c.veiculoModelo LIKE %:modeloVeiculo%) " +
             "AND (:seguradora IS NULL OR c.seguradora LIKE %:seguradora%) " +
-            "AND (:entrada IS NULL OR c.dataAcionamento >= :entrada) " +
-            "AND (:saida IS NULL OR c.dataAcionamento <= :saida)")
+            "AND (:dataAbertura IS NULL OR c.dataAbertura >= :dataAbertura) " +
+            "AND (:dataFechamento IS NULL OR c.dataFechamento <= :dataFechamento)")
     Page<Chamado> buscarPorFiltros(
             @Param("sinistro") String sinistro,
             @Param("placa") String placa,
-            @Param("codigo") String codigo,
+            @Param("codigo") Long codigo,
             @Param("status") String status,
-            @Param("tipo") String tipo,
-            @Param("veiculo") String veiculo,
-            @Param("cliente") String cliente,
+            @Param("tipoServico") String tipoServico,
+            @Param("modeloVeiculo") String modeloVeiculo,
             @Param("seguradora") String seguradora,
-            @Param("entrada") LocalDate entrada,
-            @Param("saida") LocalDate saida,
+            @Param("dataAbertura") OffsetDateTime dataAbertura,
+            @Param("dataFechamento") OffsetDateTime dataFechamento,
             Pageable pageable
     );
 }

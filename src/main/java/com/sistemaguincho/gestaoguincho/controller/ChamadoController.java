@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
 
 @RestController
 @RequestMapping("/api/chamados")
@@ -36,20 +37,19 @@ public class ChamadoController {
     public ResponseEntity<Page<ChamadoResponseDTO>> listar(
             @RequestParam(required = false) String sinistro,
             @RequestParam(required = false) String placa,
-            @RequestParam(required = false) String codigo,
+            @RequestParam(required = false) Long codigo,  // <-- agora Long
             @RequestParam(required = false) String status,
             @RequestParam(required = false) String tipo,
             @RequestParam(required = false) String veiculo,
-            @RequestParam(required = false) String cliente,
             @RequestParam(required = false) String seguradora,
-            @RequestParam(required = false) LocalDate entrada,
-            @RequestParam(required = false) LocalDate saida,
+            @RequestParam(required = false) OffsetDateTime entrada, // <-- agora OffsetDateTime
+            @RequestParam(required = false) OffsetDateTime saida,   // <-- agora OffsetDateTime
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         Page<ChamadoResponseDTO> chamados = service.listarChamados(
-                sinistro, placa, codigo, status, tipo, veiculo, cliente, seguradora, entrada, saida, pageable
+                sinistro, placa, codigo, status, tipo, veiculo, seguradora, entrada, saida, pageable
         );
         return ResponseEntity.ok(chamados);
     }
