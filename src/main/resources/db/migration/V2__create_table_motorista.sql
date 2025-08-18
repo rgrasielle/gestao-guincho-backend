@@ -1,9 +1,10 @@
+-- Cria tabela motorista
 CREATE TABLE motorista (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    id BIGSERIAL PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
     cpf VARCHAR(14) NOT NULL UNIQUE,
     cnh VARCHAR(20) NOT NULL UNIQUE,
     telefone VARCHAR(20),
     email VARCHAR(100),
-    disponibilidade ENUM('DISPONIVEL', 'EM_ATENDIMENTO', 'INDISPONIVEL') NOT NULL DEFAULT 'DISPONIVEL'
+    disponibilidade disponibilidade_enum NOT NULL DEFAULT 'DISPONIVEL'
 );

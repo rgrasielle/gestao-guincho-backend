@@ -1,6 +1,5 @@
 package com.sistemaguincho.gestaoguincho.service;
 
-import com.sistemaguincho.gestaoguincho.config.ModelMapperConfig;
 import com.sistemaguincho.gestaoguincho.dto.ChamadoRequestDTO;
 import com.sistemaguincho.gestaoguincho.dto.ChamadoResponseDTO;
 import com.sistemaguincho.gestaoguincho.entity.Chamado;

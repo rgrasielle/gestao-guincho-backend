@@ -61,10 +61,10 @@ public class ChamadoRequestDTO {
 
     // 📌 Dados do cliente
     @NotBlank private String clienteNome;
-    @NotBlank private String clienteDocumento;
+    @NotBlank private String clienteCpfCnpj;
     @NotBlank private String clienteTelefone;
     @NotBlank private String clienteEmail;
-    @NotBlank private String solicitante;
+    @NotBlank private String clienteSolicitante;
 
     // 📌 Campo de observações gerais
     private String observacoes;

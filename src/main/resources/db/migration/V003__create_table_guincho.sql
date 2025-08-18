@@ -1,9 +1,0 @@
-CREATE TABLE guincho (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    modelo VARCHAR(100) NOT NULL,
-    placa VARCHAR(20) NOT NULL UNIQUE,
-    tipo VARCHAR(50),
-    capacidade DECIMAL(10,2),
-    disponibilidade VARCHAR(20) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
