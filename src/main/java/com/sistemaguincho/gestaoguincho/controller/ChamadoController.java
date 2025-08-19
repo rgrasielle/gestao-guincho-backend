@@ -38,20 +38,31 @@ public class ChamadoController {
     public ResponseEntity<Page<ChamadoResponseDTO>> listar(
             @RequestParam(required = false) String sinistro,
             @RequestParam(required = false) String placa,
-            @RequestParam(required = false) Long codigo,
+            @RequestParam(required = false) Long id,
             @RequestParam(required = false) Status status,
-            @RequestParam(required = false) String tipo,
-            @RequestParam(required = false) String veiculo,
+            @RequestParam(required = false, name = "tipo") String tipoServico,
+            @RequestParam(required = false, name = "veiculo") String modeloVeiculo,
             @RequestParam(required = false) String seguradora,
-            @RequestParam(required = false) OffsetDateTime entrada,
-            @RequestParam(required = false) OffsetDateTime saida,
+            @RequestParam(required = false, name = "entrada") OffsetDateTime dataAbertura,
+            @RequestParam(required = false, name = "saida") OffsetDateTime dataFechamento,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
+
         Page<ChamadoResponseDTO> chamados = service.listarChamados(
-                sinistro, placa, codigo, status, tipo, veiculo, seguradora, entrada, saida, pageable
+                sinistro,
+                placa,
+                id,
+                status,
+                tipoServico,
+                modeloVeiculo,
+                seguradora,
+                dataAbertura,
+                dataFechamento,
+                pageable
         );
+
         return ResponseEntity.ok(chamados);
     }
 

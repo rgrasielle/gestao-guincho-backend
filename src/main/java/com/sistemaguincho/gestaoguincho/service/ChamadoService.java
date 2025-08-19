@@ -9,6 +9,7 @@ import com.sistemaguincho.gestaoguincho.enums.Status;
 import com.sistemaguincho.gestaoguincho.repository.ChamadoRepository;
 import com.sistemaguincho.gestaoguincho.repository.GuinchoRepository;
 import com.sistemaguincho.gestaoguincho.repository.MotoristaRepository;
+import com.sistemaguincho.gestaoguincho.specification.ChamadoSpecification;
 import jakarta.persistence.EntityNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -66,7 +67,7 @@ public class ChamadoService {
     public Page<ChamadoResponseDTO> listarChamados(
             String sinistro,
             String placa,
-            Long codigo,
+            Long id,
             Status status,
             String tipoServico,
             String modeloVeiculo,
@@ -75,11 +76,15 @@ public class ChamadoService {
             OffsetDateTime dataFechamento,
             Pageable pageable
     ) {
-        Page<Chamado> chamados = chamadoRepository.buscarPorFiltros(
-                sinistro, placa, codigo, status, tipoServico, modeloVeiculo, seguradora, dataAbertura, dataFechamento, pageable
+        Page<Chamado> chamados = chamadoRepository.findAll(
+                ChamadoSpecification.filtrar(
+                        sinistro, placa, id, status, tipoServico, modeloVeiculo, seguradora, dataAbertura, dataFechamento
+                ),
+                pageable
         );
         return chamados.map(ch -> modelMapper.map(ch, ChamadoResponseDTO.class));
     }
+
 
     // Buscar chamado por ID
     public ChamadoResponseDTO buscarPorId(Long id) {
