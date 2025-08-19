@@ -1,6 +1,5 @@
 CREATE TABLE chamado (
   id BIGSERIAL PRIMARY KEY,
-  numero VARCHAR(50) UNIQUE NOT NULL,
 
   -- Dados do serviço
   seguradora VARCHAR(150),
@@ -45,7 +44,7 @@ CREATE TABLE chamado (
   observacoes TEXT,
 
   -- Status e datas
-  status VARCHAR(30) NOT NULL,
+  status VARCHAR(30) NOT NULL DEFAULT 'ABERTO',
   data_abertura TIMESTAMPTZ DEFAULT now(),
   data_fechamento TIMESTAMPTZ,
   created_at TIMESTAMPTZ DEFAULT now(),

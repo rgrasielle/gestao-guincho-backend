@@ -6,5 +6,5 @@ CREATE TABLE motorista (
     cnh VARCHAR(20) NOT NULL UNIQUE,
     telefone VARCHAR(20),
     email VARCHAR(100),
-    disponibilidade disponibilidade_enum NOT NULL DEFAULT 'DISPONIVEL'
+    disponibilidade VARCHAR(50) NOT NULL DEFAULT 'DISPONIVEL'
 );

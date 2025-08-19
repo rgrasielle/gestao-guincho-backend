@@ -1,5 +1,6 @@
 package com.sistemaguincho.gestaoguincho.dto;
 
+import com.sistemaguincho.gestaoguincho.enums.Status;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,6 +12,6 @@ import lombok.NoArgsConstructor;
 public class ChamadoStatusUpdateDTO {
 
     @NotBlank(message = "O status é obrigatório")
-    private String status;  // Valores possíveis: "Aguardando", "Em andamento", "Finalizado"
+    private Status status;  // Valores possíveis: "Aguardando", "Em andamento", "Finalizado"
 
 }

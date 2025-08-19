@@ -1,5 +1,6 @@
 package com.sistemaguincho.gestaoguincho.config;
 
+import com.sistemaguincho.gestaoguincho.dto.ChamadoRequestDTO;
 import com.sistemaguincho.gestaoguincho.dto.ChamadoResponseDTO;
 import com.sistemaguincho.gestaoguincho.entity.Chamado;
 import com.sistemaguincho.gestaoguincho.entity.Motorista;
@@ -15,7 +16,17 @@ public class ModelMapperConfig {
     public ModelMapper modelMapper() {
         ModelMapper mapper = new ModelMapper();
 
-        // Mapeamento personalizado para Chamado -> ChamadoResponseDTO
+        // Ignorar ID e relacionamentos no mapeamento DTO -> Entidade
+        mapper.addMappings(new PropertyMap<ChamadoRequestDTO, Chamado>() {
+            @Override
+            protected void configure() {
+                skip(destination.getId());          // Ignora o ID
+                skip(destination.getMotorista());   // Ignora motorista
+                skip(destination.getGuincho());     // Ignora guincho
+            }
+        });
+
+        // Mapeamento para Chamado -> ChamadoResponseDTO
         mapper.addMappings(new PropertyMap<Chamado, ChamadoResponseDTO>() {
             @Override
             protected void configure() {
@@ -23,11 +34,11 @@ public class ModelMapperConfig {
                     Motorista motorista = ((Chamado) ctx.getSource()).getMotorista();
                     return motorista != null ? motorista.getNome() : null;
                 }).map(source, destination.getMotorista());
+                // Você pode adicionar outros campos personalizados aqui se necessário
             }
         });
 
         return mapper;
     }
 }
-
 

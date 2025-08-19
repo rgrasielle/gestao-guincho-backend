@@ -13,6 +13,6 @@ CREATE TABLE guincho (
     placa VARCHAR(20) NOT NULL UNIQUE,
     tipo VARCHAR(50),
     capacidade DECIMAL(10,2),
-    disponibilidade disponibilidade_enum NOT NULL DEFAULT 'DISPONIVEL',
+    disponibilidade VARCHAR(50) NOT NULL DEFAULT 'DISPONIVEL',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

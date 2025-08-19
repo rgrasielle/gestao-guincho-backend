@@ -1,6 +1,7 @@
 package com.sistemaguincho.gestaoguincho.repository;
 
 import com.sistemaguincho.gestaoguincho.entity.Chamado;
+import com.sistemaguincho.gestaoguincho.enums.Status;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -30,7 +31,7 @@ public interface ChamadoRepository extends JpaRepository<Chamado, Long> {
             @Param("sinistro") String sinistro,
             @Param("placa") String placa,
             @Param("codigo") Long codigo,
-            @Param("status") String status,
+            @Param("status") Status status,
             @Param("tipoServico") String tipoServico,
             @Param("modeloVeiculo") String modeloVeiculo,
             @Param("seguradora") String seguradora,

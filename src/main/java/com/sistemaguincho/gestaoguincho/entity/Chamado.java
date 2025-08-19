@@ -1,5 +1,6 @@
 package com.sistemaguincho.gestaoguincho.entity;
 
+import com.sistemaguincho.gestaoguincho.enums.Status;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -71,7 +72,11 @@ public class Chamado {
     private String observacoes;
 
     // Status, datas e timestamps
-    private String status;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Status status;
+
     private OffsetDateTime dataAbertura;
     private OffsetDateTime dataFechamento;
     private OffsetDateTime createdAt;

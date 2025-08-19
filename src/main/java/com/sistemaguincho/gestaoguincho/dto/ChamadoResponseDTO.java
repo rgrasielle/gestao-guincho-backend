@@ -1,5 +1,6 @@
 package com.sistemaguincho.gestaoguincho.dto;
 
+import com.sistemaguincho.gestaoguincho.enums.Status;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,6 +18,6 @@ public class ChamadoResponseDTO {
     private String seguradora;
     private String motorista;
     private String tipoServico;
-    private String status;
+    private Status status;
 
 }

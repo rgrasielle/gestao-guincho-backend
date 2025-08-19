@@ -3,6 +3,7 @@ package com.sistemaguincho.gestaoguincho.controller;
 import com.sistemaguincho.gestaoguincho.dto.ChamadoRequestDTO;
 import com.sistemaguincho.gestaoguincho.dto.ChamadoResponseDTO;
 import com.sistemaguincho.gestaoguincho.dto.ChamadoStatusUpdateDTO;
+import com.sistemaguincho.gestaoguincho.enums.Status;
 import com.sistemaguincho.gestaoguincho.service.ChamadoService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -37,13 +38,13 @@ public class ChamadoController {
     public ResponseEntity<Page<ChamadoResponseDTO>> listar(
             @RequestParam(required = false) String sinistro,
             @RequestParam(required = false) String placa,
-            @RequestParam(required = false) Long codigo,  // <-- agora Long
-            @RequestParam(required = false) String status,
+            @RequestParam(required = false) Long codigo,
+            @RequestParam(required = false) Status status,
             @RequestParam(required = false) String tipo,
             @RequestParam(required = false) String veiculo,
             @RequestParam(required = false) String seguradora,
-            @RequestParam(required = false) OffsetDateTime entrada, // <-- agora OffsetDateTime
-            @RequestParam(required = false) OffsetDateTime saida,   // <-- agora OffsetDateTime
+            @RequestParam(required = false) OffsetDateTime entrada,
+            @RequestParam(required = false) OffsetDateTime saida,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
@@ -88,3 +89,4 @@ public class ChamadoController {
         return ResponseEntity.noContent().build();
     }
 }
+

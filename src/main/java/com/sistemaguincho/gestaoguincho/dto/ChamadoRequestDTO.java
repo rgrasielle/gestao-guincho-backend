@@ -31,6 +31,9 @@ public class ChamadoRequestDTO {
     @NotBlank(message = "O tipo de serviço é obrigatório.")
     private String tipoServico;
 
+    @NotNull(message = "O ID do guincho é obrigatório.")
+    private Long guinchoId;
+
     @NotNull(message = "O ID do motorista é obrigatório.")
     private Long motoristaId; // Vamos armazenar o ID, não o objeto inteiro
 

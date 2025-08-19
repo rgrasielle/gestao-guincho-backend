@@ -29,6 +29,7 @@ public class Guincho {
     private Double capacidade;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
     private Disponibilidade disponibilidade;
 
     private LocalDateTime createdAt = LocalDateTime.now();
