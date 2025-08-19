@@ -1,9 +1,11 @@
 package com.sistemaguincho.gestaoguincho.controller;
 
+import com.sistemaguincho.gestaoguincho.dto.GuinchoDisponibilidadeUpdateDTO;
 import com.sistemaguincho.gestaoguincho.dto.GuinchoRequestDTO;
 import com.sistemaguincho.gestaoguincho.dto.GuinchoResponseDTO;
 import com.sistemaguincho.gestaoguincho.enums.Disponibilidade;
 import com.sistemaguincho.gestaoguincho.service.GuinchoService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -36,10 +38,11 @@ public class GuinchoController {
     }
 
     @PatchMapping("/{id}/disponibilidade")
-    public GuinchoResponseDTO atualizarDisponibilidade(
+    public ResponseEntity<GuinchoResponseDTO> atualizarDisponibilidade(
             @PathVariable Long id,
-            @RequestBody Disponibilidade disponibilidade) {
-        return service.atualizarDisponibilidade(id, disponibilidade);
+            @Valid @RequestBody GuinchoDisponibilidadeUpdateDTO dto) {
+        GuinchoResponseDTO atualizado = service.atualizarDisponibilidade(id, dto.getDisponibilidade());
+        return ResponseEntity.ok(atualizado);
     }
 
     @DeleteMapping("/{id}")

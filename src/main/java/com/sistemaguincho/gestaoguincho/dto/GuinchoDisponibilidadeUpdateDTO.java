@@ -1,6 +1,6 @@
 package com.sistemaguincho.gestaoguincho.dto;
 
-import com.sistemaguincho.gestaoguincho.enums.Status;
+import com.sistemaguincho.gestaoguincho.enums.Disponibilidade;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,9 +9,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ChamadoStatusUpdateDTO {
+public class GuinchoDisponibilidadeUpdateDTO {
 
-    @NotNull(message = "O status é obrigatório")
-    private Status status;
-
+    @NotNull(message = "A disponibilidade é obrigatória")
+    private Disponibilidade disponibilidade;
 }
