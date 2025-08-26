@@ -6,6 +6,7 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "financeiro")
@@ -54,7 +55,7 @@ public class Financeiro {
     private List<CustoExcedente> custosExcedente;
 
     // Campos de controle (opcional)
-    private BigDecimal valorTotal; // Valor final calculado automaticamente
+    private BigDecimal totalFinal; // Valor final calculado automaticamente
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -66,5 +67,66 @@ public class Financeiro {
     @PreUpdate
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
+    }
+
+    // Método para calcular o total final
+    public void calcularTotalFinal() {
+        BigDecimal total = BigDecimal.ZERO;
+
+        if (custosQuilometragem != null) {
+            for (CustoQuilometragem c : custosQuilometragem) {
+                if (c.getTotal() != null) total = total.add(c.getTotal());
+            }
+        }
+
+        if (custosMotorista != null) {
+            for (CustoMotorista c : custosMotorista) {
+                if (c.getTotal() != null) total = total.add(c.getTotal());
+            }
+        }
+
+        if (custosPedagio != null) {
+            for (CustoPedagio c : custosPedagio) {
+                if (c.getTotal() != null) total = total.add(c.getTotal());
+            }
+        }
+
+        if (custosPatins != null) {
+            for (CustoPatins c : custosPatins) {
+                if (c.getValor() != null) total = total.add(c.getValor());
+            }
+        }
+
+        if (custosHoraParada != null) {
+            for (CustoHoraParada c : custosHoraParada) {
+                if (c.getValorTotal() != null) total = total.add(c.getValorTotal());
+            }
+        }
+
+        if (custosHoraTrabalhada != null) {
+            for (CustoHoraTrabalhada c : custosHoraTrabalhada) {
+                if (c.getValorTotal() != null) total = total.add(c.getValorTotal());
+            }
+        }
+
+        if (custosDiaria != null) {
+            for (CustoDiaria c : custosDiaria) {
+                if (c.getValorTotal() != null) total = total.add(c.getValorTotal());
+            }
+        }
+
+        if (custosRodaExtra != null) {
+            for (CustoRodaExtra c : custosRodaExtra) {
+                if (c.getValor() != null) total = total.add(c.getValor());
+            }
+        }
+
+        if (custosExcedente != null) {
+            for (CustoExcedente c : custosExcedente) {
+                if (c.getExcedentes() != null) total = total.add(c.getExcedentes());
+            }
+        }
+
+        this.totalFinal = total;
     }
 }
