@@ -9,6 +9,7 @@ import com.sistemaguincho.gestaoguincho.entity.custo.*;
 import com.sistemaguincho.gestaoguincho.repository.ChamadoRepository;
 import com.sistemaguincho.gestaoguincho.repository.FinanceiroRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -21,12 +22,17 @@ public class FinanceiroService {
 
     private final FinanceiroRepository financeiroRepository;
     private final ChamadoRepository chamadoRepository;
+    private final ModelMapper modelMapper;
 
-    public FinanceiroService(FinanceiroRepository financeiroRepository, ChamadoRepository chamadoRepository) {
+    public FinanceiroService(FinanceiroRepository financeiroRepository,
+                             ChamadoRepository chamadoRepository,
+                             ModelMapper modelMapper) {
         this.financeiroRepository = financeiroRepository;
         this.chamadoRepository = chamadoRepository;
+        this.modelMapper = modelMapper;
     }
 
+    // Criar/atualizar financeiro vinculado a um chamado
     public FinanceiroResponseDTO salvarFinanceiro(Long chamadoId, FinanceiroRequestDTO dto) {
         Chamado chamado = chamadoRepository.findById(chamadoId)
                 .orElseThrow(() -> new EntityNotFoundException("Chamado não encontrado"));
@@ -34,54 +40,50 @@ public class FinanceiroService {
         Financeiro financeiro = new Financeiro();
         financeiro.setChamado(chamado);
 
-        // Mapear custos e calcular totals parciais
+        // Mapear custos das entidades filhas usando ModelMapper e calcular valores parciais
         financeiro.setCustosQuilometragem(
                 mapCustoQuilometragem(dto.getCustosQuilometragem(), financeiro)
         );
-
         financeiro.setCustosMotorista(
                 mapCustoMotorista(dto.getCustosMotorista(), financeiro)
         );
-
         financeiro.setCustosPedagio(
                 mapCustoPedagio(dto.getCustosPedagio(), financeiro)
         );
-
         financeiro.setCustosPatins(
                 mapCustoPatins(dto.getCustosPatins(), financeiro)
         );
-
         financeiro.setCustosHoraParada(
                 mapCustoHoraParada(dto.getCustosHoraParada(), financeiro)
         );
-
         financeiro.setCustosHoraTrabalhada(
                 mapCustoHoraTrabalhada(dto.getCustosHoraTrabalhada(), financeiro)
         );
-
         financeiro.setCustosDiaria(
                 mapCustoDiaria(dto.getCustosDiaria(), financeiro)
         );
-
         financeiro.setCustosRodaExtra(
                 mapCustoRodaExtra(dto.getCustosRodaExtra(), financeiro)
         );
-
         financeiro.setCustosExcedente(
                 mapCustoExcedente(dto.getCustosExcedente(), financeiro)
         );
 
-        // Calcula total final somando todos os custos
+        // Calcula o total final somando todos os custos
         financeiro.calcularTotalFinal();
 
         financeiro = financeiroRepository.save(financeiro);
-        return new FinanceiroResponseDTO(financeiro);
+
+        // Mapear entidade Financeiro → DTO de resposta usando ModelMapper
+        return modelMapper.map(financeiro, FinanceiroResponseDTO.class);
     }
 
+    // Buscar financeiro de um chamado específico
     public FinanceiroResponseDTO buscarPorChamado(Long chamadoId) {
         Financeiro financeiro = financeiroRepository.findByChamadoId(chamadoId)
                 .orElseThrow(() -> new EntityNotFoundException("Financeiro não encontrado para este chamado"));
-        return new FinanceiroResponseDTO(financeiro);
+
+        return modelMapper.map(financeiro, FinanceiroResponseDTO.class);
     }
 
     // ---------- Métodos privados para mapear e calcular cada custo ----------
@@ -89,13 +91,8 @@ public class FinanceiroService {
     private List<CustoQuilometragem> mapCustoQuilometragem(List<CustoQuilometragemDTO> dtos, Financeiro financeiro) {
         if (dtos == null) return null;
         return dtos.stream().map(dto -> {
-            CustoQuilometragem c = new CustoQuilometragem();
-            c.setQuilometrosRodados(dto.getQuilometrosRodados());
-            c.setValorPorKm(dto.getValorPorKm());
-            c.setKmSaida(dto.getKmSaida());
-            c.setValorSaida(dto.getValorSaida());
-            // cálculo parcial
-            c.setTotal(dto.getQuilometrosRodados().multiply(dto.getValorPorKm()).add(dto.getValorSaida()));
+            CustoQuilometragem c = modelMapper.map(dto, CustoQuilometragem.class);
+            c.setTotal(c.getQuilometrosRodados().multiply(c.getValorPorKm()).add(c.getValorSaida()));
             c.setFinanceiro(financeiro);
             return c;
         }).collect(Collectors.toList());
@@ -104,12 +101,8 @@ public class FinanceiroService {
     private List<CustoMotorista> mapCustoMotorista(List<CustoMotoristaDTO> dtos, Financeiro financeiro) {
         if (dtos == null) return null;
         return dtos.stream().map(dto -> {
-            CustoMotorista c = new CustoMotorista();
-            c.setQuilometrosRodados(dto.getQuilometrosRodados());
-            c.setValorPorKm(dto.getValorPorKm());
-            c.setKmSaida(dto.getKmSaida());
-            c.setValorSaida(dto.getValorSaida());
-            c.setTotal(dto.getQuilometrosRodados().multiply(dto.getValorPorKm()).add(dto.getValorSaida()));
+            CustoMotorista c = modelMapper.map(dto, CustoMotorista.class);
+            c.setTotal(c.getQuilometrosRodados().multiply(c.getValorPorKm()).add(c.getValorSaida()));
             c.setFinanceiro(financeiro);
             return c;
         }).collect(Collectors.toList());
@@ -118,11 +111,8 @@ public class FinanceiroService {
     private List<CustoPedagio> mapCustoPedagio(List<CustoPedagioDTO> dtos, Financeiro financeiro) {
         if (dtos == null) return null;
         return dtos.stream().map(dto -> {
-            CustoPedagio c = new CustoPedagio();
-            c.setSinistro(dto.getSinistro());
-            c.setQuantidade(dto.getQuantidade());
-            c.setValor(dto.getValor());
-            c.setTotal(dto.getValor().multiply(new BigDecimal(dto.getQuantidade())));
+            CustoPedagio c = modelMapper.map(dto, CustoPedagio.class);
+            c.setTotal(c.getValor().multiply(new BigDecimal(c.getQuantidade())));
             c.setFinanceiro(financeiro);
             return c;
         }).collect(Collectors.toList());
@@ -131,9 +121,7 @@ public class FinanceiroService {
     private List<CustoPatins> mapCustoPatins(List<CustoPatinsDTO> dtos, Financeiro financeiro) {
         if (dtos == null) return null;
         return dtos.stream().map(dto -> {
-            CustoPatins c = new CustoPatins();
-            c.setSinistro(dto.getSinistro());
-            c.setValor(dto.getValor());
+            CustoPatins c = modelMapper.map(dto, CustoPatins.class);
             c.setFinanceiro(financeiro);
             return c;
         }).collect(Collectors.toList());
@@ -142,10 +130,8 @@ public class FinanceiroService {
     private List<CustoHoraParada> mapCustoHoraParada(List<CustoHoraParadaDTO> dtos, Financeiro financeiro) {
         if (dtos == null) return null;
         return dtos.stream().map(dto -> {
-            CustoHoraParada c = new CustoHoraParada();
-            c.setHoras(dto.getHoras());
-            c.setValorHoraParada(dto.getValorHoraParada());
-            c.setValorTotal(dto.getHoras().multiply(dto.getValorHoraParada()));
+            CustoHoraParada c = modelMapper.map(dto, CustoHoraParada.class);
+            c.setValorTotal(c.getHoras().multiply(c.getValorHoraParada()));
             c.setFinanceiro(financeiro);
             return c;
         }).collect(Collectors.toList());
@@ -154,10 +140,8 @@ public class FinanceiroService {
     private List<CustoHoraTrabalhada> mapCustoHoraTrabalhada(List<CustoHoraTrabalhadaDTO> dtos, Financeiro financeiro) {
         if (dtos == null) return null;
         return dtos.stream().map(dto -> {
-            CustoHoraTrabalhada c = new CustoHoraTrabalhada();
-            c.setHoras(dto.getHoras());
-            c.setValorHoraTrabalhada(dto.getValorHoraTrabalhada());
-            c.setValorTotal(dto.getHoras().multiply(dto.getValorHoraTrabalhada()));
+            CustoHoraTrabalhada c = modelMapper.map(dto, CustoHoraTrabalhada.class);
+            c.setValorTotal(c.getHoras().multiply(c.getValorHoraTrabalhada()));
             c.setFinanceiro(financeiro);
             return c;
         }).collect(Collectors.toList());
@@ -166,14 +150,10 @@ public class FinanceiroService {
     private List<CustoDiaria> mapCustoDiaria(List<CustoDiariaDTO> dtos, Financeiro financeiro) {
         if (dtos == null) return null;
         return dtos.stream().map(dto -> {
-            CustoDiaria c = new CustoDiaria();
-            c.setSinistro(dto.getSinistro());
-            c.setEntrada(dto.getEntrada());
-            c.setSaida(dto.getSaida());
-            long estadia = ChronoUnit.DAYS.between(dto.getEntrada(), dto.getSaida());
-            c.setEstadia(estadia);
-            c.setValorPorDia(dto.getValorPorDia());
-            c.setValorTotal(dto.getValorPorDia().multiply(new BigDecimal(estadia)));
+            CustoDiaria c = modelMapper.map(dto, CustoDiaria.class);
+            long estadia = ChronoUnit.DAYS.between(c.getEntrada(), c.getSaida());
+            c.setEstadia(BigDecimal.valueOf(estadia));
+            c.setValorTotal(c.getValorPorDia().multiply(new BigDecimal(estadia)));
             c.setFinanceiro(financeiro);
             return c;
         }).collect(Collectors.toList());
@@ -182,9 +162,7 @@ public class FinanceiroService {
     private List<CustoRodaExtra> mapCustoRodaExtra(List<CustoRodaExtraDTO> dtos, Financeiro financeiro) {
         if (dtos == null) return null;
         return dtos.stream().map(dto -> {
-            CustoRodaExtra c = new CustoRodaExtra();
-            c.setSinistro(dto.getSinistro());
-            c.setValor(dto.getValor());
+            CustoRodaExtra c = modelMapper.map(dto, CustoRodaExtra.class);
             c.setFinanceiro(financeiro);
             return c;
         }).collect(Collectors.toList());
@@ -193,9 +171,7 @@ public class FinanceiroService {
     private List<CustoExcedente> mapCustoExcedente(List<CustoExcedenteDTO> dtos, Financeiro financeiro) {
         if (dtos == null) return null;
         return dtos.stream().map(dto -> {
-            CustoExcedente c = new CustoExcedente();
-            c.setExcedentes(dto.getExcedentes());
-            c.setObservacao(dto.getObservacao());
+            CustoExcedente c = modelMapper.map(dto, CustoExcedente.class);
             c.setFinanceiro(financeiro);
             return c;
         }).collect(Collectors.toList());
