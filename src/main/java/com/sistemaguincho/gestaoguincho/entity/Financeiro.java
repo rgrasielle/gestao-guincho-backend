@@ -54,20 +54,10 @@ public class Financeiro {
     @OneToMany(mappedBy = "financeiro", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CustoExcedente> custosExcedente;
 
-    // Campos de controle (opcional)
+
+    @Column(name = "total")
     private BigDecimal totalFinal; // Valor final calculado automaticamente
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
 
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        updatedAt = LocalDateTime.now();
-    }
 
     // Método para calcular o total final
     public void calcularTotalFinal() {
