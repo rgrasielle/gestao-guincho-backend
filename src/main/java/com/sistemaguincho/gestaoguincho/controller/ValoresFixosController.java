@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/valores-fixos")
+@RequestMapping("/api/valores-fixos")
 public class ValoresFixosController {
 
     private final ValoresFixosService service;
