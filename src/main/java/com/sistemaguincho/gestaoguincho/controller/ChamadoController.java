@@ -17,7 +17,7 @@ import java.time.LocalDate;
 import java.time.OffsetDateTime;
 
 @RestController
-@RequestMapping("/api/chamados")
+@RequestMapping("/chamados")
 public class ChamadoController {
 
     private final ChamadoService service;

@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/chamados/{chamadoId}/financeiro")
+@RequestMapping("/chamados/{chamadoId}/financeiro")
 public class FinanceiroController {
 
     private final FinanceiroService financeiroService;
