@@ -15,9 +15,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.util.List;
 
 @RestController
-@RequestMapping("/chamados")
+@RequestMapping("/api/chamados")
 public class ChamadoController {
 
     private final ChamadoService service;
@@ -98,6 +99,20 @@ public class ChamadoController {
     public ResponseEntity<Void> deletar(@PathVariable Long id) {
         service.deletarChamado(id);
         return ResponseEntity.noContent().build();
+    }
+
+    // Endpoint para obter uma lista de seguradoras únicas.
+    @GetMapping("/seguradoras")
+    public ResponseEntity<List<String>> getSeguradoras() {
+        List<String> seguradoras = service.listarSeguradorasDistintas();
+        return ResponseEntity.ok(seguradoras);
+    }
+
+    // Endpoint para obter uma lista de tipos de serviço únicos.
+    @GetMapping("/tipos-servico")
+    public ResponseEntity<List<String>> getTiposServico() {
+        List<String> tiposServico = service.listarTiposServicoDistintos();
+        return ResponseEntity.ok(tiposServico);
     }
 }
 

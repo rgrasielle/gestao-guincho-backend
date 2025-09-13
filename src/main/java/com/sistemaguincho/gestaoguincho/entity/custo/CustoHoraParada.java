@@ -26,4 +26,11 @@ public class CustoHoraParada {
     @ManyToOne
     @JoinColumn(name = "financeiro_id", nullable = false)
     private Financeiro financeiro;
+
+    public void calcularTotal() {
+        BigDecimal hrs = this.horas != null ? this.horas : BigDecimal.ZERO;
+        BigDecimal vlrHora = this.valorHoraParada != null ? this.valorHoraParada : BigDecimal.ZERO;
+
+        this.valorTotal = hrs.multiply(vlrHora);
+    }
 }

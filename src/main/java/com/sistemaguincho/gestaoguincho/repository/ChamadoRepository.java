@@ -12,8 +12,16 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.util.List;
 
 @Repository
 public interface ChamadoRepository extends JpaRepository<Chamado, Long>, JpaSpecificationExecutor<Chamado> {
 
+    // Busca as seguradoras distintas a partir da entidade Chamado, acessando o campo 'seguradora'.
+    @Query("SELECT DISTINCT c.seguradora FROM Chamado c WHERE c.seguradora IS NOT NULL AND c.seguradora != '' ORDER BY c.seguradora ASC")
+    List<String> findDistinctSeguradoras();
+
+    // Busca os tipos de serviço distintos a partir da entidade Chamado, acessando o campo 'tipoServico'.
+    @Query("SELECT DISTINCT c.tipoServico FROM Chamado c WHERE c.tipoServico IS NOT NULL AND c.tipoServico != '' ORDER BY c.tipoServico ASC")
+    List<String> findDistinctTiposServico();
 }

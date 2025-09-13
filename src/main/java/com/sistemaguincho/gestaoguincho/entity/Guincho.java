@@ -3,6 +3,7 @@ package com.sistemaguincho.gestaoguincho.entity;
 import com.sistemaguincho.gestaoguincho.enums.Disponibilidade;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -32,5 +33,7 @@ public class Guincho {
     @Column(nullable = false, length = 20)
     private Disponibilidade disponibilidade;
 
-    private LocalDateTime createdAt = LocalDateTime.now();
+    @CreationTimestamp
+    private LocalDateTime createdAt;
 }
+

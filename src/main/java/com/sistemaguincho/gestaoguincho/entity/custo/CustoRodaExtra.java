@@ -19,7 +19,7 @@ public class CustoRodaExtra {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String sinistro;
+    private String descricao;
     private BigDecimal valor;
 
     @ManyToOne

@@ -3,6 +3,9 @@ package com.sistemaguincho.gestaoguincho.entity;
 import com.sistemaguincho.gestaoguincho.enums.Disponibilidade;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "motorista")

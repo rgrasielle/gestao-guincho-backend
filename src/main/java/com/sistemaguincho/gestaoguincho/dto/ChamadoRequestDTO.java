@@ -1,8 +1,6 @@
 package com.sistemaguincho.gestaoguincho.dto;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,60 +13,61 @@ import java.time.LocalTime;
 @AllArgsConstructor
 public class ChamadoRequestDTO {
 
-    // 📌 Dados do serviço
-    @NotBlank(message = "A seguradora é obrigatória.")
-    private String seguradora;
-
-    @NotBlank(message = "O número do sinistro é obrigatório.")
-    private String sinistro;
-
-    @NotNull(message = "A data do acionamento é obrigatória.")
-    private LocalDate dataAcionamento;
-
-    @NotNull(message = "A hora do acionamento é obrigatória.")
-    private LocalTime hora;
-
-    @NotBlank(message = "O tipo de serviço é obrigatório.")
-    private String tipoServico;
-
-    @NotNull(message = "O ID do guincho é obrigatório.")
-    private Long guinchoId;
-
-    @NotNull(message = "O ID do motorista é obrigatório.")
-    private Long motoristaId; // Vamos armazenar o ID, não o objeto inteiro
-
-    // 📌 Origem
-    @NotBlank private String origemCep;
-    @NotBlank private String origemCidade;
-    @NotBlank private String origemEstado;
-    @NotBlank private String origemBairro;
-    @NotBlank private String origemLogradouro;
-    @NotBlank private String origemNumero;
-
-    // 📌 Destino
-    @NotBlank private String destinoCep;
-    @NotBlank private String destinoCidade;
-    @NotBlank private String destinoEstado;
-    @NotBlank private String destinoBairro;
-    @NotBlank private String destinoLogradouro;
-    @NotBlank private String destinoNumero;
-
-    // 📌 Dados do veículo
-    @NotBlank private String veiculoModelo;
-    @NotNull private Integer veiculoAno;
-    @NotBlank private String veiculoCor;
-    @NotBlank private String veiculoPlaca;
-
-    @Size(max = 500)
-    private String veiculoObservacoes;
-
-    // 📌 Dados do cliente
-    @NotBlank private String clienteNome;
-    @NotBlank private String clienteCpfCnpj;
-    @NotBlank private String clienteTelefone;
-    @NotBlank private String clienteEmail;
-    @NotBlank private String clienteSolicitante;
-
-    // 📌 Campo de observações gerais
+    private ClienteDTO cliente;
+    private VeiculoDTO veiculo;
+    private EnderecoDTO origem;
+    private EnderecoDTO destino;
+    private ServicoDTO servico;
     private String observacoes;
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ClienteDTO {
+        private String nome;
+        private String cpfCnpj;
+        private String telefone;
+        private String email;
+        private String solicitante;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class VeiculoDTO {
+        private String modelo;
+        private Integer ano;
+        private String cor;
+        private String placa;
+        private String observacoes;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class EnderecoDTO {
+        private String cep;
+        private String cidade;
+        private String estado;
+        private String bairro;
+        private String logradouro;
+        private String numero;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ServicoDTO {
+        private String seguradora;
+        private String sinistro;
+        private LocalDate dataAcionamento;
+
+        @JsonFormat(pattern = "HH:mm:ss") // Define que o Jackson deve esperar apenas a hora
+        private LocalTime horaAcionamento;
+
+        private String tipoServico;
+        private Long guinchoId;
+        private Long motoristaId;
+    }
 }
+

@@ -19,7 +19,6 @@ public class CustoPedagio {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String sinistro;
     private Integer quantidade;
     private BigDecimal valor;
     private BigDecimal total;
@@ -27,4 +26,11 @@ public class CustoPedagio {
     @ManyToOne
     @JoinColumn(name = "financeiro_id", nullable = false)
     private Financeiro financeiro;
+
+    public void calcularTotal() {
+        BigDecimal vlr = this.valor != null ? this.valor : BigDecimal.ZERO;
+        Integer qtd = this.quantidade != null ? this.quantidade : 0;
+
+        this.total = vlr.multiply(new BigDecimal(qtd));
+    }
 }

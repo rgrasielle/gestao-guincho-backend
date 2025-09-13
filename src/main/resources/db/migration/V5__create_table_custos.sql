@@ -3,7 +3,7 @@ CREATE TABLE custo_quilometragem (
     financeiro_id BIGINT NOT NULL,
     quilometros_rodados DECIMAL(10,2),
     valor_por_km DECIMAL(10,2),
-    km_saida DECIMAL(10,2),
+    quantidade_saida DECIMAL(10,2),
     valor_saida DECIMAL(10,2),
     total DECIMAL(10,2),
 
@@ -18,7 +18,7 @@ CREATE TABLE custo_motorista (
     financeiro_id BIGINT NOT NULL,
     quilometros_rodados DECIMAL(10,2),
     valor_por_km DECIMAL(10,2),
-    km_saida DECIMAL(10,2),
+    quantidade_saida DECIMAL(10,2),
     valor_saida DECIMAL(10,2),
     total DECIMAL(10,2),
     CONSTRAINT fk_motorista_financeiro FOREIGN KEY (financeiro_id)
@@ -29,7 +29,6 @@ CREATE TABLE custo_motorista (
 CREATE TABLE custo_pedagio (
     id BIGSERIAL PRIMARY KEY,
     financeiro_id BIGINT NOT NULL,
-    sinistro VARCHAR(255),
     quantidade INT,
     valor DECIMAL(10,2),
     total DECIMAL(10,2),
@@ -41,7 +40,7 @@ CREATE TABLE custo_pedagio (
 CREATE TABLE custo_patins (
     id BIGSERIAL PRIMARY KEY,
     financeiro_id BIGINT NOT NULL,
-    sinistro VARCHAR(255) ,
+    descricao VARCHAR(255) ,
     valor DECIMAL(10,2),
     CONSTRAINT fk_patins_financeiro FOREIGN KEY (financeiro_id)
         REFERENCES financeiro (id)
@@ -73,7 +72,6 @@ CREATE TABLE custo_hora_trabalhada (
 CREATE TABLE custo_diaria (
     id BIGSERIAL PRIMARY KEY,
     financeiro_id BIGINT NOT NULL,
-    sinistro VARCHAR(255),
     entrada DATE,
     saida DATE,
     estadia INT,
@@ -87,7 +85,7 @@ CREATE TABLE custo_diaria (
 CREATE TABLE custo_roda_extra (
     id BIGSERIAL PRIMARY KEY,
     financeiro_id BIGINT NOT NULL,
-    sinistro VARCHAR(255),
+    descricao VARCHAR(255),
     valor DECIMAL(10,2),
     CONSTRAINT fk_roda_extra_financeiro FOREIGN KEY (financeiro_id)
         REFERENCES financeiro (id)

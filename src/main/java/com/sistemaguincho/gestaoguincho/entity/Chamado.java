@@ -3,6 +3,8 @@ package com.sistemaguincho.gestaoguincho.entity;
 import com.sistemaguincho.gestaoguincho.enums.Status;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -79,6 +81,10 @@ public class Chamado {
 
     private OffsetDateTime dataAbertura;
     private OffsetDateTime dataFechamento;
+
+    @CreationTimestamp
     private OffsetDateTime createdAt;
+
+    @UpdateTimestamp
     private OffsetDateTime updatedAt;
 }

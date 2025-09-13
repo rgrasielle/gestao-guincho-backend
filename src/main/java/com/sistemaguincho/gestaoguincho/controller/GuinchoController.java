@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/guinchos")
+@RequestMapping("/api/guinchos")
 public class GuinchoController {
 
     private final GuinchoService service;
