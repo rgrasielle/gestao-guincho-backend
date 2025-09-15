@@ -12,11 +12,13 @@ import com.sistemaguincho.gestaoguincho.repository.GuinchoRepository;
 import com.sistemaguincho.gestaoguincho.repository.MotoristaRepository;
 import com.sistemaguincho.gestaoguincho.specification.ChamadoSpecification;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.List;
 
@@ -66,13 +68,18 @@ public class ChamadoService {
     }
 
     // -------------------- ATUALIZAR STATUS --------------------
+    @Transactional
     public ChamadoResponseDTO atualizarStatus(Long id, Status novoStatus) {
         Chamado chamado = chamadoRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Chamado não encontrado"));
 
         chamado.setStatus(novoStatus);
+
         if (novoStatus == Status.FINALIZADO) {
             chamado.setDataFechamento(OffsetDateTime.now());
+        } else {
+            // Se o chamado for reaberto, limpa a data de fechamento.
+            chamado.setDataFechamento(null);
         }
 
         Chamado atualizado = chamadoRepository.save(chamado);
@@ -81,20 +88,18 @@ public class ChamadoService {
 
     // -------------------- LISTAR CHAMADOS --------------------
     public Page<ChamadoResponseDTO> listarChamados(
-            String sinistro,
-            String placa,
-            Long id,
+            String busca,
             Status status,
             String tipoServico,
-            String modeloVeiculo,
             String seguradora,
-            OffsetDateTime dataAbertura,
-            OffsetDateTime dataFechamento,
+            Long motoristaId,
+            LocalDate dataServicoInicio,
+            LocalDate dataServicoFim,
             Pageable pageable
     ) {
         Page<Chamado> chamadosPage = chamadoRepository.findAll(
                 ChamadoSpecification.filtrar(
-                        sinistro, placa, id, status, tipoServico, modeloVeiculo, seguradora, dataAbertura, dataFechamento
+                        busca, status, tipoServico, seguradora, motoristaId, dataServicoInicio, dataServicoFim
                 ),
                 pageable
         );
@@ -168,8 +173,8 @@ public class ChamadoService {
         // Serviço
         chamado.setSeguradora(dto.getServico().getSeguradora());
         chamado.setSinistro(dto.getServico().getSinistro());
-        chamado.setDataAcionamento(dto.getServico().getDataAcionamento());
-        chamado.setHora(dto.getServico().getHoraAcionamento());
+        chamado.setDataServico(dto.getServico().getDataServico());
+        chamado.setHora(dto.getServico().getHora());
         chamado.setTipoServico(dto.getServico().getTipoServico());
 
         // Motorista
@@ -196,7 +201,7 @@ public class ChamadoService {
 
         // Financeiro
         financeiroRepository.findByChamadoId(chamado.getId())
-                .ifPresent(financeiro -> dto.setValorFinal(financeiro.getTotalFinal()));
+                .ifPresent(financeiro -> dto.setValorFinal(financeiro.getTotal()));
 
         // Guincho e Motorista
         if (chamado.getGuincho() != null) {
@@ -241,7 +246,7 @@ public class ChamadoService {
         // Serviço
         dto.setSeguradora(chamado.getSeguradora());
         dto.setSinistro(chamado.getSinistro());
-        dto.setDataAcionamento(chamado.getDataAcionamento());
+        dto.setDataServico(chamado.getDataServico());
         dto.setHora(chamado.getHora());
         dto.setTipoServico(chamado.getTipoServico());
 

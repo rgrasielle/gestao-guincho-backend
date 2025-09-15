@@ -26,7 +26,7 @@ public class Chamado {
     // Dados do serviço
     private String seguradora;
     private String sinistro;
-    private LocalDate dataAcionamento;
+    private LocalDate dataServico;
     private LocalTime hora;
     private String tipoServico;
 

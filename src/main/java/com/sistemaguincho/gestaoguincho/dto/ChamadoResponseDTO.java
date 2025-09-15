@@ -53,7 +53,7 @@ public class ChamadoResponseDTO {
     // Serviço
     private String seguradora;
     private String sinistro;
-    private LocalDate dataAcionamento;
+    private LocalDate dataServico;
     private LocalTime hora;
     private String tipoServico;
 

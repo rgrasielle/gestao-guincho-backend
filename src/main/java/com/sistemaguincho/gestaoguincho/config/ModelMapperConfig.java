@@ -40,7 +40,7 @@ public class ModelMapperConfig {
                 // Mapeamento campo a campo
                 destination.setId(source.getId());
                 destination.setStatus(source.getStatus());
-                destination.setDataAcionamento(source.getDataAcionamento());
+                destination.setDataServico(source.getDataServico());
                 destination.setHora(source.getHora());
                 destination.setClienteNome(source.getClienteNome());
                 destination.setClienteTelefone(source.getClienteTelefone());

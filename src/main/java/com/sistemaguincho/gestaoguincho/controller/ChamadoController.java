@@ -9,6 +9,8 @@ import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,37 +32,51 @@ public class ChamadoController {
     // Criar chamado
     @PostMapping
     public ResponseEntity<ChamadoResponseDTO> criar(@Valid @RequestBody ChamadoRequestDTO dto) {
+
+        System.out.println("DTO recebido para criar chamado: " + dto);
+
         ChamadoResponseDTO criado = service.criarChamado(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(criado);
     }
 
-    // Listar chamados com filtros opcionais
     @GetMapping
     public ResponseEntity<Page<ChamadoResponseDTO>> listar(
-            @RequestParam(required = false) String sinistro,
-            @RequestParam(required = false) String placa,
-            @RequestParam(required = false) Long id,
-            @RequestParam(required = false) Status status,
+
+
+            @RequestParam(required = false) String busca,
+
+            @RequestParam(required = false) Long motoristaId,
+            @RequestParam(required = false) String status,
             @RequestParam(required = false, name = "tipo") String tipoServico,
-            @RequestParam(required = false, name = "veiculo") String modeloVeiculo,
             @RequestParam(required = false) String seguradora,
-            @RequestParam(required = false, name = "entrada") OffsetDateTime dataAbertura,
-            @RequestParam(required = false, name = "saida") OffsetDateTime dataFechamento,
+
+            @RequestParam(required = false) LocalDate dataServicoInicio,
+            @RequestParam(required = false) LocalDate dataServicoFim,
+
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "dataAbertura"));
 
+        // A lógica de conversão do status para Enum continua a mesma, está correta.
+        Status statusEnum = null;
+        if (status != null && !status.trim().isEmpty() && !status.equalsIgnoreCase("todos")) {
+            try {
+                statusEnum = Status.valueOf(status.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                // Ignora status inválido
+            }
+        }
+
+        // CHAMADA DE SERVIÇO
         Page<ChamadoResponseDTO> chamados = service.listarChamados(
-                sinistro,
-                placa,
-                id,
-                status,
+                busca,          // <-- novo
+                statusEnum,
                 tipoServico,
-                modeloVeiculo,
                 seguradora,
-                dataAbertura,
-                dataFechamento,
+                motoristaId,    // <-- novo
+                dataServicoInicio,
+                dataServicoFim,
                 pageable
         );
 

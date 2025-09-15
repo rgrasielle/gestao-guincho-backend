@@ -65,8 +65,10 @@ public class FinanceiroDTO {
     private String observacoesExcedente;
 
     // --- Totais Finais ---
+
+    private BigDecimal subtotal;
     private BigDecimal desconto;
-    private BigDecimal valorFinal;
+    private BigDecimal total;
 
     @Data
     @NoArgsConstructor

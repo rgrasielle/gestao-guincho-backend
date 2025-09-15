@@ -55,68 +55,82 @@ public class Financeiro {
     private List<CustoExcedente> custosExcedente;
 
 
-    @Column(name = "total")
-    private BigDecimal totalFinal; // Valor final calculado automaticamente
+    // Campos financeiros
+    @Column(name = "subtotal", nullable = false)
+    private BigDecimal subtotal;
+
+    @Column(name = "desconto", nullable = false)
+    private BigDecimal desconto;
+
+    @Column(name = "total", nullable = false)
+    private BigDecimal total;
 
 
-    // Método para calcular o total final
-    public void calcularTotalFinal() {
-        BigDecimal total = BigDecimal.ZERO;
+    public void calcularTotais() {
+        // Passo 1: Calcular o subtotal somando todos os custos
+        BigDecimal subtotalCalculado = BigDecimal.ZERO;
 
         if (custosQuilometragem != null) {
             for (CustoQuilometragem c : custosQuilometragem) {
-                if (c.getTotal() != null) total = total.add(c.getTotal());
+                if (c.getTotal() != null) subtotalCalculado = subtotalCalculado.add(c.getTotal());
             }
         }
 
         if (custosMotorista != null) {
             for (CustoMotorista c : custosMotorista) {
-                if (c.getTotal() != null) total = total.add(c.getTotal());
+                if (c.getTotal() != null) subtotalCalculado = subtotalCalculado.add(c.getTotal());
             }
         }
 
         if (custosPedagio != null) {
             for (CustoPedagio c : custosPedagio) {
-                if (c.getTotal() != null) total = total.add(c.getTotal());
+                if (c.getTotal() != null) subtotalCalculado = subtotalCalculado.add(c.getTotal());
             }
         }
 
         if (custosPatins != null) {
             for (CustoPatins c : custosPatins) {
-                if (c.getValor() != null) total = total.add(c.getValor());
+                if (c.getValor() != null) subtotalCalculado = subtotalCalculado.add(c.getValor());
             }
         }
 
         if (custosHoraParada != null) {
             for (CustoHoraParada c : custosHoraParada) {
-                if (c.getValorTotal() != null) total = total.add(c.getValorTotal());
+                if (c.getValorTotal() != null) subtotalCalculado = subtotalCalculado.add(c.getValorTotal());
             }
         }
 
         if (custosHoraTrabalhada != null) {
             for (CustoHoraTrabalhada c : custosHoraTrabalhada) {
-                if (c.getValorTotal() != null) total = total.add(c.getValorTotal());
+                if (c.getValorTotal() != null) subtotalCalculado = subtotalCalculado.add(c.getValorTotal());
             }
         }
 
         if (custosDiaria != null) {
             for (CustoDiaria c : custosDiaria) {
-                if (c.getValorTotal() != null) total = total.add(c.getValorTotal());
+                if (c.getValorTotal() != null) subtotalCalculado = subtotalCalculado.add(c.getValorTotal());
             }
         }
 
         if (custosRodaExtra != null) {
             for (CustoRodaExtra c : custosRodaExtra) {
-                if (c.getValor() != null) total = total.add(c.getValor());
+                if (c.getValor() != null) subtotalCalculado = subtotalCalculado.add(c.getValor());
             }
         }
 
         if (custosExcedente != null) {
             for (CustoExcedente c : custosExcedente) {
-                if (c.getExcedentes() != null) total = total.add(c.getExcedentes());
+                if (c.getExcedentes() != null) subtotalCalculado = subtotalCalculado.add(c.getExcedentes());
             }
         }
 
-        this.totalFinal = total;
+        // Passo 2: Atribuir o valor calculado ao campo 'subtotal'
+        this.subtotal = subtotalCalculado;
+
+        // Passo 3: Garantir que o desconto não seja nulo para o cálculo
+        BigDecimal descontoAtual = (this.desconto != null) ? this.desconto : BigDecimal.ZERO;
+
+        // Passo 4: Calcular o total final e atribuir ao campo 'total'
+        this.total = this.subtotal.subtract(descontoAtual);
     }
 }

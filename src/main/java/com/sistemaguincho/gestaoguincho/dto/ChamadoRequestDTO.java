@@ -60,10 +60,10 @@ public class ChamadoRequestDTO {
     public static class ServicoDTO {
         private String seguradora;
         private String sinistro;
-        private LocalDate dataAcionamento;
+        private LocalDate dataServico;
 
         @JsonFormat(pattern = "HH:mm:ss") // Define que o Jackson deve esperar apenas a hora
-        private LocalTime horaAcionamento;
+        private LocalTime hora;
 
         private String tipoServico;
         private Long guinchoId;

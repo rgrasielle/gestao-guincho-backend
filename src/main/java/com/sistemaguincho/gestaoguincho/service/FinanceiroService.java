@@ -35,15 +35,17 @@ public class FinanceiroService {
     // Criar/atualizar financeiro vinculado a um chamado
     @Transactional
     public FinanceiroDTO salvarFinanceiro(Long chamadoId, FinanceiroDTO dto) {
+        // 1 Busca o chamado pelo ID
         Chamado chamado = chamadoRepository.findById(chamadoId)
                 .orElseThrow(() -> new EntityNotFoundException("Chamado não encontrado"));
 
+        // 2 Busca o financeiro existente ou cria um novo
         Financeiro financeiro = financeiroRepository.findByChamadoId(chamadoId)
                 .orElse(new Financeiro());
 
         financeiro.setChamado(chamado);
 
-        // Limpa as listas antigas para garantir que os dados sejam substituídos se for uma atualização
+        // 3 Limpa listas antigas (se existirem)
         if (financeiro.getId() != null) {
             financeiro.getCustosQuilometragem().clear();
             financeiro.getCustosMotorista().clear();
@@ -56,7 +58,9 @@ public class FinanceiroService {
             financeiro.getCustosExcedente().clear();
         }
 
-        // Constrói a entidade CustoQuilometragem a partir do DTO
+        // 4 Constrói cada tipo de custo e adiciona à lista existente
+
+        // --- Pagamento Quilometragem ---
         CustoQuilometragem custoPgto = new CustoQuilometragem();
         custoPgto.setQuilometrosRodados(dto.getPagamentoKmRodados());
         custoPgto.setValorPorKm(dto.getPagamentoValorKm());
@@ -64,59 +68,54 @@ public class FinanceiroService {
         custoPgto.setValorSaida(dto.getPagamentoValorSaida());
         custoPgto.calcularTotal();
         custoPgto.setFinanceiro(financeiro);
-        financeiro.setCustosQuilometragem(List.of(custoPgto));
+        financeiro.getCustosQuilometragem().add(custoPgto);
 
-        // Constrói a entidade CustoMotorista a partir do DTO
+        // --- Acerto com Motorista ---
         CustoMotorista custoAcerto = new CustoMotorista();
         custoAcerto.setQuilometrosRodados(dto.getAcertoKmRodados());
         custoAcerto.setValorPorKm(dto.getAcertoValorKm());
         custoAcerto.setQuantidadeSaida(dto.getAcertoQuantidadeSaida());
         custoAcerto.setValorSaida(dto.getAcertoValorSaida());
-        custoAcerto.calcularTotal(); // Calcula o total
+        custoAcerto.calcularTotal();
         custoAcerto.setFinanceiro(financeiro);
-        financeiro.setCustosMotorista(List.of(custoAcerto));
+        financeiro.getCustosMotorista().add(custoAcerto);
 
-        // Constrói a entidade CustoPedagio a partir do DTO
+        // --- Pedágios ---
         if (dto.getCustosPedagio() != null) {
-            List<CustoPedagio> listaCustosPedagio = dto.getCustosPedagio().stream()
-                    .map(pedagioDto -> {
-                        CustoPedagio custoPedagio = new CustoPedagio();
-                        custoPedagio.setQuantidade(pedagioDto.getQuantidadePedagio());
-                        custoPedagio.setValor(pedagioDto.getValorPedagio());
-                        custoPedagio.calcularTotal();
-                        custoPedagio.setFinanceiro(financeiro);
-                        return custoPedagio;
-                    })
-                    .collect(Collectors.toList());
-            financeiro.setCustosPedagio(listaCustosPedagio);
-        } else {
-            financeiro.setCustosPedagio(new ArrayList<>());
+            for (FinanceiroDTO.CustoPedagioDTO p : dto.getCustosPedagio()) {
+                CustoPedagio c = new CustoPedagio();
+                c.setQuantidade(p.getQuantidadePedagio());
+                c.setValor(p.getValorPedagio());
+                c.calcularTotal();
+                c.setFinanceiro(financeiro);
+                financeiro.getCustosPedagio().add(c);
+            }
         }
 
-        // Constrói a entidade CustoPatins a partir do DTO
+        // --- Patins ---
         CustoPatins custoPatins = new CustoPatins();
         custoPatins.setDescricao(dto.getDescricaoPatins());
         custoPatins.setValor(dto.getValorPatins());
         custoPatins.setFinanceiro(financeiro);
-        financeiro.setCustosPatins(List.of(custoPatins));
+        financeiro.getCustosPatins().add(custoPatins);
 
-        // Constrói a entidade CustoHoraParada a partir do DTO
+        // --- Hora Parada ---
         CustoHoraParada custoHoraParada = new CustoHoraParada();
         custoHoraParada.setHoras(dto.getHorasParadas());
         custoHoraParada.setValorHoraParada(dto.getValorHoraParada());
         custoHoraParada.calcularTotal();
         custoHoraParada.setFinanceiro(financeiro);
-        financeiro.setCustosHoraParada(List.of(custoHoraParada));
+        financeiro.getCustosHoraParada().add(custoHoraParada);
 
-        // Constrói a entidade CustoHoraTrabalhada a partir do DTO
+        // --- Hora Trabalhada ---
         CustoHoraTrabalhada custoHoraTrabalhada = new CustoHoraTrabalhada();
         custoHoraTrabalhada.setHoras(dto.getHorasTrabalhadas());
         custoHoraTrabalhada.setValorHoraTrabalhada(dto.getValorHoraTrabalhada());
         custoHoraTrabalhada.calcularTotal();
         custoHoraTrabalhada.setFinanceiro(financeiro);
-        financeiro.setCustosHoraTrabalhada(List.of(custoHoraTrabalhada));
+        financeiro.getCustosHoraTrabalhada().add(custoHoraTrabalhada);
 
-        // Constrói a entidade CustoDiaria a partir do DTO
+        // --- Diárias ---
         CustoDiaria custoDiaria = new CustoDiaria();
         custoDiaria.setEntrada(dto.getEntradaDiarias());
         custoDiaria.setSaida(dto.getSaidaDiarias());
@@ -124,25 +123,29 @@ public class FinanceiroService {
         custoDiaria.setValorPorDia(dto.getValorDiaria());
         custoDiaria.calcularTotal();
         custoDiaria.setFinanceiro(financeiro);
-        financeiro.setCustosDiaria(List.of(custoDiaria));
+        financeiro.getCustosDiaria().add(custoDiaria);
 
-        // Constrói a entidade CustoRodaExtra a partir do DTO
+        // --- Rodas Extras ---
         CustoRodaExtra custoRodaExtra = new CustoRodaExtra();
         custoRodaExtra.setDescricao(dto.getDescricaoRodas());
         custoRodaExtra.setValor(dto.getValorRodas());
         custoRodaExtra.setFinanceiro(financeiro);
-        financeiro.setCustosRodaExtra(List.of(custoRodaExtra));
+        financeiro.getCustosRodaExtra().add(custoRodaExtra);
 
-        // Constrói a entidade CustoExcedente a partir do DTO
+        // --- Excedentes ---
         CustoExcedente custoExcedente = new CustoExcedente();
         custoExcedente.setExcedentes(dto.getExcedente());
         custoExcedente.setObservacao(dto.getObservacoesExcedente());
         custoExcedente.setFinanceiro(financeiro);
-        financeiro.setCustosExcedente(List.of(custoExcedente));
+        financeiro.getCustosExcedente().add(custoExcedente);
 
-        // Recalcula o valor final com base nos novos custos
-        financeiro.calcularTotalFinal();
+        // 5 Define o desconto na entidade ANTES de calcular
+        financeiro.setDesconto(dto.getDesconto());
 
+        // 6 Recalcula o subtotal e o total final com base nos custos e no desconto
+        financeiro.calcularTotais();
+
+        // 7 Salva e retorna o DTO atualizado
         Financeiro salvo = financeiroRepository.save(financeiro);
         return convertToDto(salvo);
     }
@@ -162,8 +165,11 @@ public class FinanceiroService {
 
         FinanceiroDTO dto = new FinanceiroDTO();
         dto.setId(financeiro.getId());
-        dto.setChamadoId(financeiro.getChamado().getId());
-        dto.setValorFinal(financeiro.getTotalFinal());
+
+        // Mapeia os campos para o DTO
+        dto.setSubtotal(financeiro.getSubtotal());
+        dto.setDesconto(financeiro.getDesconto());
+        dto.setTotal(financeiro.getTotal());
 
         // Extrai os dados da lista de CustoQuilometragem (geralmente terá 1 item)
         if (financeiro.getCustosQuilometragem() != null && !financeiro.getCustosQuilometragem().isEmpty()) {
@@ -244,97 +250,3 @@ public class FinanceiroService {
     }
 }
 
-   /* // ---------- Métodos privados para mapear e calcular cada custo ----------
-
-    private List<CustoQuilometragem> mapCustoQuilometragem(List<CustoQuilometragemDTO> dtos, Financeiro financeiro) {
-        if (dtos == null) return null;
-        return dtos.stream().map(dto -> {
-            CustoQuilometragem c = modelMapper.map(dto, CustoQuilometragem.class);
-            c.setTotal(c.getQuilometrosRodados().multiply(c.getValorPorKm()).add(c.getValorSaida()));
-            c.setFinanceiro(financeiro);
-            return c;
-        }).collect(Collectors.toList());
-    }
-
-    private List<CustoMotorista> mapCustoMotorista(List<CustoMotoristaDTO> dtos, Financeiro financeiro) {
-        if (dtos == null) return null;
-        return dtos.stream().map(dto -> {
-            CustoMotorista c = modelMapper.map(dto, CustoMotorista.class);
-            c.setTotal(c.getQuilometrosRodados().multiply(c.getValorPorKm()).add(c.getValorSaida()));
-            c.setFinanceiro(financeiro);
-            return c;
-        }).collect(Collectors.toList());
-    }
-
-    private List<CustoPedagio> mapCustoPedagio(List<CustoPedagioDTO> dtos, Financeiro financeiro) {
-        if (dtos == null) return null;
-        return dtos.stream().map(dto -> {
-            CustoPedagio c = modelMapper.map(dto, CustoPedagio.class);
-            c.setTotal(c.getValor().multiply(new BigDecimal(c.getQuantidade())));
-            c.setFinanceiro(financeiro);
-            return c;
-        }).collect(Collectors.toList());
-    }
-
-    private List<CustoPatins> mapCustoPatins(List<CustoPatinsDTO> dtos, Financeiro financeiro) {
-        if (dtos == null) return null;
-        return dtos.stream().map(dto -> {
-            CustoPatins c = modelMapper.map(dto, CustoPatins.class);
-            c.setFinanceiro(financeiro);
-            return c;
-        }).collect(Collectors.toList());
-    }
-
-    private List<CustoHoraParada> mapCustoHoraParada(List<CustoHoraParadaDTO> dtos, Financeiro financeiro) {
-        if (dtos == null) return null;
-        return dtos.stream().map(dto -> {
-            CustoHoraParada c = modelMapper.map(dto, CustoHoraParada.class);
-            c.setValorTotal(c.getHoras().multiply(c.getValorHoraParada()));
-            c.setFinanceiro(financeiro);
-            return c;
-        }).collect(Collectors.toList());
-    }
-
-    private List<CustoHoraTrabalhada> mapCustoHoraTrabalhada(List<CustoHoraTrabalhadaDTO> dtos, Financeiro financeiro) {
-        if (dtos == null) return null;
-        return dtos.stream().map(dto -> {
-            CustoHoraTrabalhada c = modelMapper.map(dto, CustoHoraTrabalhada.class);
-            c.setValorTotal(c.getHoras().multiply(c.getValorHoraTrabalhada()));
-            c.setFinanceiro(financeiro);
-            return c;
-        }).collect(Collectors.toList());
-    }
-
-    private List<CustoDiaria> mapCustoDiaria(List<CustoDiariaDTO> dtos, Financeiro financeiro) {
-        if (dtos == null) return null;
-        return dtos.stream().map(dto -> {
-            CustoDiaria c = modelMapper.map(dto, CustoDiaria.class);
-            long estadia = ChronoUnit.DAYS.between(c.getEntrada(), c.getSaida());
-            c.setEstadia(BigDecimal.valueOf(estadia));
-            c.setValorTotal(c.getValorPorDia().multiply(new BigDecimal(estadia)));
-            c.setFinanceiro(financeiro);
-            return c;
-        }).collect(Collectors.toList());
-    }
-
-    private List<CustoRodaExtra> mapCustoRodaExtra(List<CustoRodaExtraDTO> dtos, Financeiro financeiro) {
-        if (dtos == null) return null;
-        return dtos.stream().map(dto -> {
-            CustoRodaExtra c = modelMapper.map(dto, CustoRodaExtra.class);
-            c.setFinanceiro(financeiro);
-            return c;
-        }).collect(Collectors.toList());
-    }
-
-    private List<CustoExcedente> mapCustoExcedente(List<CustoExcedenteDTO> dtos, Financeiro financeiro) {
-        if (dtos == null) return null;
-        return dtos.stream().map(dto -> {
-            CustoExcedente c = modelMapper.map(dto, CustoExcedente.class);
-            c.setFinanceiro(financeiro);
-            return c;
-        }).collect(Collectors.toList());
-    }
-}
-
-
-    */
