@@ -47,7 +47,7 @@ public class ChamadoController {
 
             @RequestParam(required = false) Long motoristaId,
             @RequestParam(required = false) String status,
-            @RequestParam(required = false, name = "tipo") String tipoServico,
+            @RequestParam(required = false) String tipoServico,
             @RequestParam(required = false) String seguradora,
 
             @RequestParam(required = false) LocalDate dataServicoInicio,

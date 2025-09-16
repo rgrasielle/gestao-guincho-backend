@@ -5,6 +5,7 @@ import com.sistemaguincho.gestaoguincho.dto.ChamadoResponseDTO;
 import com.sistemaguincho.gestaoguincho.entity.Chamado;
 import com.sistemaguincho.gestaoguincho.entity.Guincho;
 import com.sistemaguincho.gestaoguincho.entity.Motorista;
+import com.sistemaguincho.gestaoguincho.enums.Disponibilidade;
 import com.sistemaguincho.gestaoguincho.enums.Status;
 import com.sistemaguincho.gestaoguincho.repository.ChamadoRepository;
 import com.sistemaguincho.gestaoguincho.repository.FinanceiroRepository;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class ChamadoService {
@@ -47,7 +49,21 @@ public class ChamadoService {
 
     // -------------------- CRIAR CHAMADO --------------------
     public ChamadoResponseDTO criarChamado(ChamadoRequestDTO dto) {
-        Chamado chamado = mapDtoParaEntidade(dto);
+
+        // Lógica de atualização de Disponibilidade
+        Motorista motoristaAtribuido = motoristaRepository.findById(dto.getServico().getMotoristaId())
+                .orElseThrow(() -> new EntityNotFoundException("Motorista não encontrado"));
+        Guincho guinchoAtribuido = guinchoRepository.findById(dto.getServico().getGuinchoId())
+                .orElseThrow(() -> new EntityNotFoundException("Guincho não encontrado"));
+
+        motoristaAtribuido.setDisponibilidade(Disponibilidade.EM_ATENDIMENTO);
+        guinchoAtribuido.setDisponibilidade(Disponibilidade.EM_ATENDIMENTO);
+
+        motoristaRepository.save(motoristaAtribuido);
+        guinchoRepository.save(guinchoAtribuido);
+
+
+        Chamado chamado = mapDtoParaEntidade(dto, new Chamado(), motoristaAtribuido, guinchoAtribuido);
         chamado.setStatus(Status.ABERTO);
         chamado.setDataAbertura(OffsetDateTime.now());
 
@@ -60,8 +76,24 @@ public class ChamadoService {
         Chamado chamadoExistente = chamadoRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Chamado não encontrado"));
 
+        // Lógica de atualização de Disponibilidade
+        // Libera o motorista e guincho antigos se eles forem trocados
+        liberarRecursosSeNecessario(chamadoExistente, dto);
+
+        // Pega o motorista e o guincho que serão atribuídos (ou reatribuídos)
+        Motorista motoristaNovo = motoristaRepository.findById(dto.getServico().getMotoristaId())
+                .orElseThrow(() -> new EntityNotFoundException("Motorista não encontrado"));
+        Guincho guinchoNovo = guinchoRepository.findById(dto.getServico().getGuinchoId())
+                .orElseThrow(() -> new EntityNotFoundException("Guincho não encontrado"));
+
+        motoristaNovo.setDisponibilidade(Disponibilidade.EM_ATENDIMENTO);
+        guinchoNovo.setDisponibilidade(Disponibilidade.EM_ATENDIMENTO);
+
+        motoristaRepository.save(motoristaNovo);
+        guinchoRepository.save(guinchoNovo);
+
         // Atualiza os campos manualmente
-        mapDtoParaEntidade(dto, chamadoExistente);
+        mapDtoParaEntidade(dto, chamadoExistente, motoristaNovo, guinchoNovo);
 
         Chamado atualizado = chamadoRepository.save(chamadoExistente);
         return modelMapper.map(atualizado, ChamadoResponseDTO.class);
@@ -75,11 +107,35 @@ public class ChamadoService {
 
         chamado.setStatus(novoStatus);
 
+        Motorista motorista = chamado.getMotorista();
+        Guincho guincho = chamado.getGuincho();
+
         if (novoStatus == Status.FINALIZADO) {
             chamado.setDataFechamento(OffsetDateTime.now());
+
+            // Se o motorista existir, define como DISPONIVEL
+            if (motorista != null) {
+                motorista.setDisponibilidade(Disponibilidade.DISPONIVEL);
+                motoristaRepository.save(motorista);
+            }
+            // Se o guincho existir, define como DISPONIVEL
+            if (guincho != null) {
+                guincho.setDisponibilidade(Disponibilidade.DISPONIVEL);
+                guinchoRepository.save(guincho);
+            }
+
         } else {
-            // Se o chamado for reaberto, limpa a data de fechamento.
             chamado.setDataFechamento(null);
+
+            // Se o chamado for reaberto, motorista e guincho voltam a ficar ocupados
+            if (motorista != null) {
+                motorista.setDisponibilidade(Disponibilidade.EM_ATENDIMENTO);
+                motoristaRepository.save(motorista);
+            }
+            if (guincho != null) {
+                guincho.setDisponibilidade(Disponibilidade.EM_ATENDIMENTO);
+                guinchoRepository.save(guincho);
+            }
         }
 
         Chamado atualizado = chamadoRepository.save(chamado);
@@ -135,11 +191,7 @@ public class ChamadoService {
 
     // -------------------- MÉTODOS AUXILIARES --------------------
 
-    private Chamado mapDtoParaEntidade(ChamadoRequestDTO dto) {
-        return mapDtoParaEntidade(dto, new Chamado());
-    }
-
-    private Chamado mapDtoParaEntidade(ChamadoRequestDTO dto, Chamado chamado) {
+    private Chamado mapDtoParaEntidade(ChamadoRequestDTO dto, Chamado chamado, Motorista motorista, Guincho guincho) {
         // Cliente
         chamado.setClienteNome(dto.getCliente().getNome());
         chamado.setClienteCpfCnpj(dto.getCliente().getCpfCnpj());
@@ -178,19 +230,36 @@ public class ChamadoService {
         chamado.setTipoServico(dto.getServico().getTipoServico());
 
         // Motorista
-        Motorista motorista = motoristaRepository.findById(dto.getServico().getMotoristaId())
-                .orElseThrow(() -> new EntityNotFoundException("Motorista não encontrado"));
         chamado.setMotorista(motorista);
 
         // Guincho
-        Guincho guincho = guinchoRepository.findById(dto.getServico().getGuinchoId())
-                .orElseThrow(() -> new EntityNotFoundException("Guincho não encontrado"));
         chamado.setGuincho(guincho);
 
         // Observações
         chamado.setObservacoes(dto.getObservacoes());
 
         return chamado;
+    }
+
+    // Método para lidar com a troca de recursos na atualização
+    private void liberarRecursosSeNecessario(Chamado chamadoExistente, ChamadoRequestDTO dto) {
+        // Libera motorista antigo se for diferente do novo
+        if (chamadoExistente.getMotorista() != null &&
+                !Objects.equals(chamadoExistente.getMotorista().getId(), dto.getServico().getMotoristaId())) {
+
+            Motorista motoristaAntigo = chamadoExistente.getMotorista();
+            motoristaAntigo.setDisponibilidade(Disponibilidade.DISPONIVEL);
+            motoristaRepository.save(motoristaAntigo);
+        }
+
+        // Libera guincho antigo se for diferente do novo
+        if (chamadoExistente.getGuincho() != null &&
+                !Objects.equals(chamadoExistente.getGuincho().getId(), dto.getServico().getGuinchoId())) {
+
+            Guincho guinchoAntigo = chamadoExistente.getGuincho();
+            guinchoAntigo.setDisponibilidade(Disponibilidade.DISPONIVEL);
+            guinchoRepository.save(guinchoAntigo);
+        }
     }
 
     // -------------------- CONVERT DTO --------------------
