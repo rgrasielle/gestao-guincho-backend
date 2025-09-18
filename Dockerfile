@@ -1,5 +1,5 @@
 # Usa uma imagem base oficial do Java 17. É uma base segura e otimizada.
-FROM eclipse-temurin:17-jdk-jammy
+FROM eclipse-temurin:21-jdk-jammy
 
 # Define o diretório de trabalho dentro do container
 WORKDIR /app
