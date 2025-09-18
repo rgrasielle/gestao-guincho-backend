@@ -9,6 +9,9 @@ WORKDIR /app
 COPY .mvn/ .mvn
 COPY mvnw pom.xml ./
 
+# Dá permissão de execução para o script do Maven Wrapper
+RUN chmod +x ./mvnw
+
 # Baixa todas as dependências do projeto. Se o pom.xml não mudar, o Docker reutiliza essa camada.
 RUN ./mvnw dependency:go-offline
 
