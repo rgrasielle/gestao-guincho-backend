@@ -1,26 +1,20 @@
-package com.sistemaguincho.gestaoguincho.config; // Coloque no seu pacote de config ou um pacote de exceptions
+package com.sistemaguincho.gestaoguincho.config;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-@RestControllerAdvice
+@ControllerAdvice // intercepta exceções em toda a aplicação
 public class GlobalExceptionHandler {
 
-    private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
-
-    @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<String> handleAccessDeniedException(AccessDeniedException ex) {
-        // Este método será chamado se qualquer parte do código lançar uma AccessDeniedException
-        logger.error("============= ERRO DE ACESSO CAPTURADO! =============");
-        logger.error("A exceção AccessDeniedException foi lançada.", ex);
-        logger.error("=====================================================");
-
-        // Retorna a resposta 403 Forbidden que você está vendo
-        return new ResponseEntity<>("Acesso Negado", HttpStatus.FORBIDDEN);
+    // Captura qualquer RuntimeException lançada
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<ErrorResponse> handleRuntimeException(RuntimeException ex) {
+        ErrorResponse error = new ErrorResponse(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                ex.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
     }
 }
