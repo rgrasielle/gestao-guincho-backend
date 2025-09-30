@@ -3,6 +3,8 @@ package com.sistemaguincho.gestaoguincho.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
+
 @Entity
 @Table(name = "valores_fixos")
 @Getter
@@ -16,19 +18,19 @@ public class ValoresFixos {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Double valorQuilometragemPorKm;
+    private BigDecimal valorQuilometragemPorKm;
 
-    private Double valorQuilometragemSaida;
+    private BigDecimal  valorQuilometragemSaida;
 
-    private Double valorMotoristaPorKm;
+    private BigDecimal  valorMotoristaPorKm;
 
-    private Double valorMotoristaSaida;
+    private BigDecimal  valorMotoristaSaida;
 
-    private Double valorHoraParada;
+    private BigDecimal  valorHoraParada;
 
-    private Double valorHoraTrabalhada;
+    private BigDecimal  valorHoraTrabalhada;
 
-    private Double valorDiaria;
+    private BigDecimal  valorDiaria;
 
 }
 
