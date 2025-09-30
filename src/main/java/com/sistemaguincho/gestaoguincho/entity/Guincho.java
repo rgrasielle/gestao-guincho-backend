@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -27,7 +28,7 @@ public class Guincho {
 
     private String tipo;
 
-    private Double capacidade;
+    private BigDecimal capacidade;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
