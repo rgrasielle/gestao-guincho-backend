@@ -24,4 +24,10 @@ public interface ChamadoRepository extends JpaRepository<Chamado, Long>, JpaSpec
     // Busca os tipos de serviço distintos a partir da entidade Chamado, acessando o campo 'tipoServico'.
     @Query("SELECT DISTINCT c.tipoServico FROM Chamado c WHERE c.tipoServico IS NOT NULL AND c.tipoServico != '' ORDER BY c.tipoServico ASC")
     List<String> findDistinctTiposServico();
+
+    // Verifica se existe algum chamado ABERTO para um motorista específico
+    boolean existsByMotoristaIdAndStatus(Long motoristaId, Status status);
+
+    // Verifica se existe algum chamado ABERTO para um guincho específico
+    boolean existsByGuinchoIdAndStatus(Long guinchoId, Status status);
 }
