@@ -35,10 +35,24 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
 
+        String path = request.getServletPath();
+
+        // Ignorar rotas públicas (sem verificar JWT)
+        if (path.startsWith("/api/auth/") ||
+                path.startsWith("/v3/api-docs") ||
+                path.startsWith("/swagger-ui")) {
+
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        // Tenta recuperar o token do cabeçalho Authorization
         String token = getJwtFromRequest(request);
 
+        // Se o token existir e o contexto ainda não tiver autenticação
         if (token != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             String username = tokenProvider.getUsernameFromToken(token);
+
             if (username != null) {
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
@@ -55,6 +69,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
         }
 
+        // Continua a cadeia de filtros normalmente
         filterChain.doFilter(request, response);
     }
 

@@ -4,6 +4,7 @@ import com.sistemaguincho.gestaoguincho.auth.dto.AuthResponse;
 import com.sistemaguincho.gestaoguincho.auth.dto.LoginRequest;
 import com.sistemaguincho.gestaoguincho.auth.dto.RegisterRequest;
 import com.sistemaguincho.gestaoguincho.auth.service.AuthService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,7 +25,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
+    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
         return ResponseEntity.ok(authService.login(request));
     }
 }

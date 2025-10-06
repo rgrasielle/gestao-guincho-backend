@@ -50,7 +50,16 @@ public class MotoristaService {
     public MotoristaResponseDTO atualizar(Long id, MotoristaRequestDTO dto) {
         Motorista motorista = repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Motorista não encontrado"));
-        modelMapper.map(dto, motorista);
+
+        // Atualiza apenas os campos que podem ser alterados pelo usuário
+        motorista.setNome(dto.getNome());
+        motorista.setCpf(dto.getCpf());
+        motorista.setCnh(dto.getCnh());
+        motorista.setTelefone(dto.getTelefone());
+        motorista.setEmail(dto.getEmail());
+
+        // NÃO altera a disponibilidade, mantém o valor atual do banco
+
         Motorista atualizado = repository.save(motorista);
         return modelMapper.map(atualizado, MotoristaResponseDTO.class);
     }

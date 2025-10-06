@@ -48,8 +48,17 @@ public class GuinchoService {
     public GuinchoResponseDTO atualizar(Long id, GuinchoRequestDTO dto) {
         Guincho existente = repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Guincho não encontrado"));
-        modelMapper.map(dto, existente);
-        return modelMapper.map(repository.save(existente), GuinchoResponseDTO.class);
+
+        // Atualiza apenas os campos que podem ser alterados pelo usuário
+        existente.setModelo(dto.getModelo());
+        existente.setPlaca(dto.getPlaca());
+        existente.setTipo(dto.getTipo());
+        existente.setCapacidade(dto.getCapacidade());
+
+        // NÃO altera a disponibilidade, mantém o valor atual do banco
+
+        Guincho atualizado = repository.save(existente);
+        return modelMapper.map(atualizado, GuinchoResponseDTO.class);
     }
 
     // Atualizar disponibilidade
