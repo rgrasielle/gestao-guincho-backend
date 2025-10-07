@@ -141,6 +141,9 @@ public class FinanceiroService {
 
         // 5 Define o desconto na entidade ANTES de calcular
         financeiro.setDesconto(dto.getDesconto());
+        if (financeiro.getDesconto() == null) {
+            financeiro.setDesconto(BigDecimal.ZERO);
+        }
 
         // 6 Recalcula o subtotal e o total final com base nos custos e no desconto
         financeiro.calcularTotais();

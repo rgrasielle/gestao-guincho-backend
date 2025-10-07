@@ -1,5 +1,6 @@
 package com.sistemaguincho.gestaoguincho.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.sistemaguincho.gestaoguincho.enums.Status;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -53,8 +54,13 @@ public class ChamadoResponseDTO {
     // Serviço
     private String seguradora;
     private String sinistro;
+
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dataServico;
+
+    @JsonFormat(pattern = "HH:mm:ss")
     private LocalTime hora;
+
     private String tipoServico;
 
     // Campos de relacionamento
