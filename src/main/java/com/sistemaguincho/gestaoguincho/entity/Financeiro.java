@@ -55,14 +55,12 @@ public class Financeiro {
     @OneToMany(mappedBy = "financeiro", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CustoExcedente> custosExcedente = new ArrayList<>();
 
-
-
     // Campos financeiros
     @Column(name = "subtotal", nullable = false)
     private BigDecimal subtotal;
 
     @Column(name = "desconto", nullable = false)
-    private BigDecimal desconto;
+    private BigDecimal desconto = BigDecimal.ZERO;
 
     @Column(name = "total", nullable = false)
     private BigDecimal total;
