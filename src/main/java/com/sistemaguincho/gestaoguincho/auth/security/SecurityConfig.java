@@ -45,6 +45,9 @@ public class SecurityConfig {
                         // rotas públicas
                         .requestMatchers("/api/auth/**").permitAll()
 
+                        // Endpoint de health check
+                        .requestMatchers("/ping").permitAll()
+
                         // Permite que qualquer um visualize e filtre a lista de chamados
                         .requestMatchers(HttpMethod.GET, "/api/chamados/**").permitAll()
 
