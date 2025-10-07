@@ -6,6 +6,7 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -28,31 +29,32 @@ public class Financeiro {
 
     // Relacionamentos com as entidades filhas de custos (1 Financeiro → N custos)
     @OneToMany(mappedBy = "financeiro", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CustoQuilometragem> custosQuilometragem;
+    private List<CustoQuilometragem> custosQuilometragem = new ArrayList<>();
 
     @OneToMany(mappedBy = "financeiro", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CustoMotorista> custosMotorista;
+    private List<CustoMotorista> custosMotorista = new ArrayList<>();
 
     @OneToMany(mappedBy = "financeiro", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CustoPedagio> custosPedagio;
+    private List<CustoPedagio> custosPedagio = new ArrayList<>();
 
     @OneToMany(mappedBy = "financeiro", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CustoPatins> custosPatins;
+    private List<CustoPatins> custosPatins = new ArrayList<>();
 
     @OneToMany(mappedBy = "financeiro", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CustoHoraParada> custosHoraParada;
+    private List<CustoHoraParada> custosHoraParada = new ArrayList<>();
 
     @OneToMany(mappedBy = "financeiro", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CustoHoraTrabalhada> custosHoraTrabalhada;
+    private List<CustoHoraTrabalhada> custosHoraTrabalhada = new ArrayList<>();
 
     @OneToMany(mappedBy = "financeiro", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CustoDiaria> custosDiaria;
+    private List<CustoDiaria> custosDiaria = new ArrayList<>();
 
     @OneToMany(mappedBy = "financeiro", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CustoRodaExtra> custosRodaExtra;
+    private List<CustoRodaExtra> custosRodaExtra = new ArrayList<>();
 
     @OneToMany(mappedBy = "financeiro", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CustoExcedente> custosExcedente;
+    private List<CustoExcedente> custosExcedente = new ArrayList<>();
+
 
 
     // Campos financeiros
